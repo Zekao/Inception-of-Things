@@ -1,1 +1,1 @@
-find . -name p1/.
+*.vagrant
