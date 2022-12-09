@@ -1,21 +1,34 @@
 server_ip = "192.168.56.110"
 worker_ip = "192.168.56.111"
-IMAGE = "ubuntu/jammy64"
+IMAGE = "alpine/alpine64"
 
 
 Vagrant.configure("2") do |config|
-    config.vm.box = "ubuntu/jammy64"
-
+    config.vm.box = IMAGE
+    config.vm.boot_timeout = 20
         config.vm.define "emaugaleS" do |control|
-        control.vm.hostname = "emaugaleS"
-        control.vm.network "private_network", ip: server_ip
-        control.vm.box = IMAGE
+            control.vm.hostname = "emaugaleS"
+            control.vm.network "private_network", ip: server_ip
+            control.vm.box = IMAGE
+            control.vm.provider "virtualbox" do |vb|
+                vb.memory = "2048"
+                vb.cpus = 2
+            end
+            # install k3s server
+            control.vm.provision "shell", inline: <<-SHELL
+                apk add curl
+                curl -sfL https://get.k3s.io | sh -
+            SHELL
+
         end
-   
-        config.vm.define "emaugaleSW" do |config|
+    config.vm.define "emaugaleSW" do |config|
         config.vm.hostname = "emaugaleSW"
         config.vm.network "private_network", ip: worker_ip
         config.vm.box = IMAGE
+        config.vm.provider "virtualbox" do |vb|
+            vb.memory = "2048"
+            vb.cpus = 2
         end
     end
+end
   
