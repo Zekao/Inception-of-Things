@@ -1,3 +1,6 @@
+CONTROLLER_NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token) 
+
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -20,11 +23,30 @@ Vagrant.configure("2") do |config|
   config.vm.define "server" do |server|
       server.vm.hostname = "lusehair"
       server.vm.network :private_network, ip: "192.168.56.110" 
+      server.vm.provision "shell", inline: <<-SHELL 
+        sudo apt-get update
+        sudo apt-get install -y curl apt-transport-https
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+        sudo apt-get update
+        sudo apt-get install -y kubectl
+        curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+      SHELL
   end
   config.vm.define "worker" do |worker|
     worker.vm.hostname = "lusehairSW"
     worker.vm.network :private_network, ip: "192.168.56.111" 
+    worker.vm.provision "shell", inline: <<-SHELL 
+      sudo apt-get update
+      sudo apt-get install -y curl apt-transport-https
+      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+      echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+      sudo apt-get update
+      sudo apt-get install -y kubectl
+      curl -sfL https://get.k3s.io | K3S_URL=https://192.58.56.110:6443 K3S_TOKEN=<CONTROLLER_NODE_TOKEN> sh -
+    SHELL
   end 
+ 
 end
 
 
@@ -81,4 +103,3 @@ end
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-
