@@ -25,31 +25,37 @@ Vagrant.configure("2") do |config|
             server.vm.hostname = SERVER_HOSTNAME
             server.vm.network "private_network", ip: SERVER_IP
 
-            server.vm.provision "shell" do |s|
-                s.env = {
-                    "INSTALL_K3S_EXEC" => "--flannel-iface=eth1",
-                    "K3S_CUBECONFIG_MODE" => "644"      
-                }
-                s.path = "https://get.k3s.io"
-            end
-            
-            server.vm.provision "shell" do |s|  
-                s.args = [SERVER_TOKEN_PATH, SERVER_PUBLIC_TOKEN]
-                s.inline = "cp $1 $2 ; chown vagrant:vagrant $2"
-            end
-            server.vm.provision "shell", inline: "firewall-cmd --add-port=6443/tcp"
-        end
-
-
-        config.vm.define "worker" do |worker|
-            worker.vm.hostname = WORKER_HOSTNAME
-            worker.vm.network "private_network", ip: WORKER_IP
-            
-            # install k3s on worker machine 
-            worker.vm.provision "shell", inline: <<-SHELL
+            server.vm.provision "shell", inline: <<-SHELL
                 apk add curl
-                curl -sfL get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig=/home/ubuntu/.kube/config --write-kubeconfig-mode=644" sh -
+                curl -sfL #{K3S_INSTALL} | sh -
                 SHELL
+            # server.vm.provision "shell" do |s|
+            #     s.env = {
+            #         "INSTALL_K3S_EXEC" => "--flannel-iface=eth1",
+            #         "K3S_CUBECONFIG_MODE" => "644",
+            #         "K3S_URL" => "https://#{SERVER_IP}:6443",
+            #         "K3S_TOKEN" => "$(cat #{SERVER_PUBLIC_TOKEN})", # Trouver un moyen de récupérer le token car la ca marche pas
+            #     }
+                # s.path = "https://get.k3s.io | sh - " 
             end
-        end
+        # end
+    end
+        #     server.vm.provision "shell" do |s|  
+        #         s.args = [SERVER_TOKEN_PATH, SERVER_PUBLIC_TOKEN]
+        #         s.inline = "cp $1 $2 ; chown vagrant:vagrant $2"
+        #     end
+        #     server.vm.provision "shell", inline: "firewall-cmd --add-port=6443/tcp"
+        # end
+
+
+        # config.vm.define "worker" do |worker|
+        #     worker.vm.hostname = WORKER_HOSTNAME
+        #     worker.vm.network "private_network", ip: WORKER_IP
+            
+        #     # install k3s on worker machine 
+        #     worker.vm.provision "shell", inline: <<-SHELL
+        #         apk add curl
+        #         curl -sfL get.k3s.io | sh - --write-kubeconfig-mode=644" 
+        #     end
+        # end
     
