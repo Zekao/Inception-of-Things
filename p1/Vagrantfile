@@ -2,11 +2,11 @@ SERVER_IP = "192.168.56.110"
 WORKER_IP = "192.168.56.111"
 
 SERVER_HOSTNAME = "emaugaleS"
-SERVER_TOKEN_PATH = "/vagrant/server-token" 
-SERVER_PUBLIC_TOKEN = "/var/lib/rancher/k3s/server/token"
+SERVER_TOKEN = "K103097cce7ed020a23131ce8944e88b4f338983bc408ed06d8aa1f658871ac35c5::server:990854ed40b196e8f3a5e84c79964507" 
+SERVER_TOKEN_PATH = "/var/lib/rancher/k3s/server/token"
 WORKER_HOSTNAME = "emaugaleSW"
 
-IMAGE = "generic/alpine38"
+IMAGE = "generic/alpine312"
 K3S_INSTALL = "https://get.k3s.io"
 
 MEMORY = "2048"
@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
             vb.memory = "2048"
             vb.cpus = 2
         end
-            config.vm.synced_folder '.', '/vagrant', disabled: true # sinon ca marche pas avec WSL (A RETIRER SI PAS WSL)
+            config.vm.synced_folder '.', '/vagrant', disabled: true
     
         config.vm.define "server" do |server|
             server.vm.hostname = SERVER_HOSTNAME
@@ -27,20 +27,17 @@ Vagrant.configure("2") do |config|
 
             server.vm.provision "shell", inline: <<-SHELL
                 apk add curl
-                curl -sfL #{K3S_INSTALL} | sh -
+                curl -sfL #{K3S_INSTALL} | INSTALL_K3S_EXEC="server" sh -s --node-name=#{SERVER_HOSTNAME}-controller
+                K3S_TOKEN=$(cat /var/lib/rancher/k3s/server/token)
                 SHELL
-            # server.vm.provision "shell" do |s|
-            #     s.env = {
-            #         "INSTALL_K3S_EXEC" => "--flannel-iface=eth1",
-            #         "K3S_CUBECONFIG_MODE" => "644",
-            #         "K3S_URL" => "https://#{SERVER_IP}:6443",
-            #         "K3S_TOKEN" => "$(cat #{SERVER_PUBLIC_TOKEN})", # Trouver un moyen de récupérer le token car la ca marche pas
-            #     }
-                # s.path = "https://get.k3s.io | sh - " 
-            end
-        # end
+
+        end
     end
-        #     server.vm.provision "shell" do |s|  
+        
+    
+    
+    
+    #     server.vm.provision "shell" do |s|  
         #         s.args = [SERVER_TOKEN_PATH, SERVER_PUBLIC_TOKEN]
         #         s.inline = "cp $1 $2 ; chown vagrant:vagrant $2"
         #     end
