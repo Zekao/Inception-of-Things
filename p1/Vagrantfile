@@ -2,11 +2,10 @@ SERVER_IP = "192.168.56.110"
 WORKER_IP = "192.168.56.111"
 
 SERVER_HOSTNAME = "emaugaleS"
-SERVER_TOKEN = "K103097cce7ed020a23131ce8944e88b4f338983bc408ed06d8aa1f658871ac35c5::server:990854ed40b196e8f3a5e84c79964507" 
 SERVER_TOKEN_PATH = "/var/lib/rancher/k3s/server/token"
 WORKER_HOSTNAME = "emaugaleSW"
 
-IMAGE = "generic/alpine312"
+IMAGE = "debian/buster64"
 K3S_INSTALL = "https://get.k3s.io"
 
 MEMORY = "2048"
@@ -19,40 +18,18 @@ Vagrant.configure("2") do |config|
             vb.memory = "2048"
             vb.cpus = 2
         end
-            config.vm.synced_folder '.', '/vagrant', disabled: true
-    
+
+        config.vm.synced_folder "/mnt/c/Users/Zekao/Desktop/tmp_shared", "/vagrant", type: "virtualbox", create: true
         config.vm.define "server" do |server|
             server.vm.hostname = SERVER_HOSTNAME
             server.vm.network "private_network", ip: SERVER_IP
-
-            server.vm.provision "shell", inline: <<-SHELL
-                apk add curl
-                curl -sfL #{K3S_INSTALL} | INSTALL_K3S_EXEC="server" sh -s --node-name=#{SERVER_HOSTNAME}-controller
-                K3S_TOKEN=$(cat /var/lib/rancher/k3s/server/token)
-                SHELL
+            server.vm.provision "shell", privileged: true, path: "scripts/k3s_master.sh", args: [SERVER_IP]
 
         end
+
+        config.vm.define "worker" do |worker|
+            worker.vm.hostname = WORKER_HOSTNAME
+            worker.vm.network "private_network", ip: WORKER_IP
+            worker.vm.provision "shell", privileged: true, path: "scripts/k3s_slave.sh", args: [SERVER_IP, WORKER_IP]
+        end
     end
-        
-    
-    
-    
-    #     server.vm.provision "shell" do |s|  
-        #         s.args = [SERVER_TOKEN_PATH, SERVER_PUBLIC_TOKEN]
-        #         s.inline = "cp $1 $2 ; chown vagrant:vagrant $2"
-        #     end
-        #     server.vm.provision "shell", inline: "firewall-cmd --add-port=6443/tcp"
-        # end
-
-
-        # config.vm.define "worker" do |worker|
-        #     worker.vm.hostname = WORKER_HOSTNAME
-        #     worker.vm.network "private_network", ip: WORKER_IP
-            
-        #     # install k3s on worker machine 
-        #     worker.vm.provision "shell", inline: <<-SHELL
-        #         apk add curl
-        #         curl -sfL get.k3s.io | sh - --write-kubeconfig-mode=644" 
-        #     end
-        # end
-    
