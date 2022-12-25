@@ -2,17 +2,14 @@
 
 echo "[INFO]  Installing k3s on server node (ip: $1)"
 
-export INSTALL_K3S_EXEC="--write-kubeconfig-mode=644 --tls-san emaugaleS --node-ip $1  --bind-address=$1 --advertise-address=$1 "
+export INSTALL_K3S_EXEC="--write-kubeconfig-mode=644 --tls-san emaugaleS --node-ip $1  --bind-address=$1 --advertise-address=$1 --token-file=/vagrant/$2 "
 
-curl -sfL https://get.k3s.io |  sh -
+echo "[INFO]  ARGUMENT PASSED TO INSTALL_K3S_EXEC: $INSTALL_K3S_EXEC"
+# apk add curl
 
-sudo cp /var/lib/rancher/k3s/server/node-token /vagrant/tmp/
-
-sudo apt-get update
-sudo apt-get install net-tools -y   
+# curl -sfL https://get.k3s.io |  sh -
 
 echo "[INFO]  Successfully installed k3s on server node"
 
-echo "alias k='kubectl'" >> /etc/profile.d/00-aliases.sh # way to add alias on all users
+# echo "alias k='kubectl'" >> /etc/profile.d/00-aliases.sh # way to add alias on all users
 
-source ~/.bashrc

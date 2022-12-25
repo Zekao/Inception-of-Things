@@ -2,14 +2,21 @@ SERVER_IP = "192.168.56.110"
 WORKER_IP = "192.168.56.111"
 
 SERVER_HOSTNAME = "emaugaleS"
-SERVER_TOKEN_PATH = "/var/lib/rancher/k3s/server/token"
 WORKER_HOSTNAME = "emaugaleSW"
 
-IMAGE = "debian/buster64"
+IMAGE = "generic/alpine311"
 K3S_INSTALL = "https://get.k3s.io"
 
 MEMORY = "2048"
 CPUS = 2 
+
+K3S_TOKEN="token_file"
+
+if File.file?(K3S_TOKEN) == false
+    File.open(K3S_TOKEN, "w") do | file |
+        file << SecureRandom.hex(32) << "\n"
+    end
+end
 
 Vagrant.configure("2") do |config|
 
@@ -19,17 +26,17 @@ Vagrant.configure("2") do |config|
             vb.cpus = 2
         end
 
-        config.vm.synced_folder "/mnt/c/Users/Zekao/Desktop/tmp_shared", "/vagrant", type: "virtualbox", create: true
+        # config.vm.synced_folder ".", "/vagrant", disabled: true
         config.vm.define "server" do |server|
             server.vm.hostname = SERVER_HOSTNAME
             server.vm.network "private_network", ip: SERVER_IP
-            server.vm.provision "shell", privileged: true, path: "scripts/k3s_master.sh", args: [SERVER_IP]
+            server.vm.provision "shell", privileged: true, path: "scripts/k3s_master.sh", args: [SERVER_IP, K3S_TOKEN]
 
         end
 
         config.vm.define "worker" do |worker|
             worker.vm.hostname = WORKER_HOSTNAME
             worker.vm.network "private_network", ip: WORKER_IP
-            worker.vm.provision "shell", privileged: true, path: "scripts/k3s_slave.sh", args: [SERVER_IP, WORKER_IP]
+            worker.vm.provision "shell", privileged: true, path: "scripts/k3s_slave.sh", args: [SERVER_IP, WORKER_IP, K3S_TOKEN]
         end
     end
