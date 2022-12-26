@@ -1,1 +1,3 @@
 *.vagrant
+p1/token_file
+p1/tmp_work
