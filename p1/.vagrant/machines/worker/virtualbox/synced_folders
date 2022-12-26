@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/home/ubuntu/42/Inception-of-Things/p1","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}

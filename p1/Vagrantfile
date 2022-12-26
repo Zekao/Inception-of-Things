@@ -1,4 +1,11 @@
-CONTROLLER_NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token) 
+#CONTROLLER_NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token) 
+SERVER_NODE_TOKEN="shared/node-token"
+
+#Ressources 
+
+# https://stackoverflow.com/questions/43492322/vagrant-was-unable-to-mount-virtualbox-shared-folders 
+# https://www.vagrantup.com/docs/synced-folders/basic_usage.html
+# https://stackoverflow.com/questions/66449289/is-there-any-way-to-bind-k3s-flannel-to-another-interface
 
 
 # -*- mode: ruby -*-
@@ -22,28 +29,32 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define "server" do |server|
       server.vm.hostname = "lusehair"
-      server.vm.network :private_network, ip: "192.168.56.110" 
+      server.vm.network :private_network, ip: "192.168.56.110", virtual_box__intnet: "eth1" 
+      server.vm.synced_folder ".", "/vagrant", disabled: false
       server.vm.provision "shell", inline: <<-SHELL 
-        sudo apt-get update
-        sudo apt-get install -y curl apt-transport-https
-        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-        echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
-        sudo apt-get update
-        sudo apt-get install -y kubectl
-        curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
-      SHELL
+        # sudo apt-get update
+        # sudo apt-get install -y curl apt-transport-https
+        # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        # echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+        # sudo apt-get update
+        # sudo apt-get install -y kubectl
+        curl -sfL https://get.k3s.io | INSTALL_k3S_EXEC="--flannel-iface=eth1" K3S_KUBECONFIG_MODE="644" sh -
+        sleep 10
+        sudo cat /var/lib/rancher/k3s/server/node-token > /home/vagrant/node-token
+        SHELL
   end
   config.vm.define "worker" do |worker|
     worker.vm.hostname = "lusehairSW"
-    worker.vm.network :private_network, ip: "192.168.56.111" 
+    worker.vm.network :private_network, ip: "192.168.56.111",virtual_box__intnet: "eth1"
     worker.vm.provision "shell", inline: <<-SHELL 
-      sudo apt-get update
-      sudo apt-get install -y curl apt-transport-https
-      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-      echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
-      sudo apt-get update
-      sudo apt-get install -y kubectl
-      curl -sfL https://get.k3s.io | K3S_URL=https://192.58.56.110:6443 K3S_TOKEN=<CONTROLLER_NODE_TOKEN> sh -
+      # sudo apt-get update
+      # sudo apt-get install -y curl apt-transport-https
+      # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+      # echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+      # sudo apt-get update
+      # sudo apt-get install -y kubectl
+      curl -sfL https://get.k3s.io | K3S_URL=https://192.58.56.110:6443 INSTALL_k3S_EXEC=" --flannel-iface=eth1" K3S_TOKEN=SERVER_NODE_TOKEN 
+      #K3S_TOKEN=<CONTROLLER_NODE_TOKEN> sh -
     SHELL
   end 
  
