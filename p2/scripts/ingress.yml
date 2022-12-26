@@ -1,0 +1,44 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  rules:
+    - host: "app1.com"
+      http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: helloworld-1
+                port:
+                  number: 80
+    - host: "app2.com"
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: helloworld-2
+              port:
+                number: 80
+    - host: "app3.com"
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: helloworld-3
+              port:
+                number: 80
+  defaultBackend:
+    service:
+      name: helloworld-3
+      port:
+        number: 80
+---
+

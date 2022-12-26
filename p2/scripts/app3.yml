@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-3
+  labels:
+    app: helloworld-3
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: helloworld-3
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-3
+  labels:
+    app: helloworld-3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld-3
+  template:
+    metadata:
+      labels:
+        app: helloworld-3
+    spec:
+      containers:
+      - name: helloworld-3
+        image: paulbouwer/hello-kubernetes:1.10
+        imagePullPolicy: IfNotPresent
+        env: 
+        - name: MESSAGE
+          value: "Hello from app-three."
