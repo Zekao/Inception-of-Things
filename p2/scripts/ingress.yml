@@ -36,10 +36,17 @@ spec:
                   name: app-3
                   port:
                     number: 80
-  defaultBackend:
-    service:
-      name: app-1
-      port:
-        number: 80
----
 
+    # ------------------------------------------------ #
+    #  For browser (change to check if all app works)  #
+    # ------------------------------------------------ # 
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-3
+                port:
+                  number: 80
+---
