@@ -38,7 +38,7 @@ spec:
                     number: 80
   defaultBackend:
     service:
-      name: app-2
+      name: app-1
       port:
         number: 80
 ---

@@ -24,7 +24,6 @@ spec:
       targetPort: 8080
   selector:
     app: app-2
-  type: NodePort
 ---
 apiVersion: v1
 kind: Service
@@ -38,5 +37,4 @@ spec:
       targetPort: 8080
   selector:
     app: app-3
-  type: NodePort
 ---
