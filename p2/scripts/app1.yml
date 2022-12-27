@@ -1,36 +1,22 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: helloworld-1
-  labels:
-    app: helloworld-1
-spec:
-  ports:
-    - port: 80
-      targetPort: 8080
-  selector:
-    app: helloworld-1
-  type: LoadBalancer
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: helloworld-1
+  name: app-1
   labels:
-    app: helloworld-1
+    app: app-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: helloworld-1
+      app: app-1
   template:
     metadata:
       labels:
-        app: helloworld-1
+        app: app-1
     spec:
       containers:
-      - name: helloworld-1
+      - name: app-1
         image: paulbouwer/hello-kubernetes:1.10
         imagePullPolicy: IfNotPresent
         env: 

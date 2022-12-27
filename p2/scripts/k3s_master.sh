@@ -16,7 +16,9 @@ echo "[INFO]  Successfully installed k3s on server node"
 
 echo "alias k='kubectl'" >> /etc/profile.d/00-aliases.sh # way to add alias on all users
 
-sleep 10
+sleep 5
+
+kubectl apply -f /vagrant/scripts/services.yml; sleep 2
 
 kubectl apply -f /vagrant/scripts/app1.yml; sleep 2
 
