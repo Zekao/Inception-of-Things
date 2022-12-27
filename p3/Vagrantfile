@@ -1,0 +1,25 @@
+SERVER_IP = "192.168.56.110"
+
+SERVER_HOSTNAME = "emaugaleS"
+
+IMAGE = "generic/alpine311"
+
+MEMORY = "2048"
+
+CPUS = 2 
+
+Vagrant.configure("2") do |config|
+
+        config.vm.box = IMAGE
+        config.vm.provider "virtualbox" do |vb|
+            vb.memory = MEMORY
+            vb.cpus = CPUS
+        end
+
+        config.vm.define "server" do |server|
+            server.vm.hostname = SERVER_HOSTNAME
+            server.vm.synced_folder ".", "/vagrant"
+            server.vm.network "private_network", ip: SERVER_IP
+            server.vm.provision "shell", privileged: true, path: "scripts/k3s_master.sh", args: [SERVER_IP]
+        end
+    end
