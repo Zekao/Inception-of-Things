@@ -1,0 +1,4 @@
+*.vagrant
+p1/token_file
+p1/tmp_work
+p1/scripts/node-token

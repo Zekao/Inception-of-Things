@@ -1,0 +1,34 @@
+SERVER_IP = "192.168.56.110"
+WORKER_IP = "192.168.56.111"
+
+SERVER_HOSTNAME = "emaugaleS"
+WORKER_HOSTNAME = "emaugaleSW"
+
+IMAGE = "generic/alpine311"
+
+MEMORY = "2048"
+CPUS = 2 
+
+Vagrant.configure("2") do |config|
+
+        config.vm.box = IMAGE
+        config.vm.provider "virtualbox" do |vb|
+            vb.memory = MEMORY
+            vb.cpus = CPUS
+        end
+
+        config.vm.define "emaugaleS" do |emaugaleS|
+            emaugaleS.vm.hostname = SERVER_HOSTNAME
+            emaugaleS.vm.synced_folder ".", "/vagrant"
+            emaugaleS.vm.network "private_network", ip: SERVER_IP
+            emaugaleS.vm.provision "shell", privileged: true, path: "scripts/k3s_master.sh", args: [SERVER_IP]
+
+        end
+
+        config.vm.define "emaugaleSW" do |emaugaleSW|
+            emaugaleSW.vm.hostname = WORKER_HOSTNAME
+            emaugaleSW.vm.synced_folder ".", "/vagrant"
+            emaugaleSW.vm.network "private_network", ip: WORKER_IP
+            emaugaleSW.vm.provision "shell", privileged: true, path: "scripts/k3s_slave.sh", args: [SERVER_IP, WORKER_IP]
+        end
+    end
