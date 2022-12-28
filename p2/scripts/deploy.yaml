@@ -1,0 +1,205 @@
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  
+spec:
+  rules:
+    - host: "app1.com"
+      http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: app1
+                  port:
+                    number: 80
+    - host: "app2.com"
+      http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: app2
+                  port:
+                    number: 80
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app3
+                port:
+                  number: 80
+---
+
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  
+spec:
+  rules:
+    - host: "app1.com"
+      http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: app1
+                  port:
+                    number: 80
+    - host: "app2.com"
+      http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: app2
+                  port:
+                    number: 80
+    - host: "app3.com"
+      http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: app3
+                  port:
+                    number: 80
+            
+
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1
+  labels:
+    app: app1
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: app1
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2
+  labels:
+    app: app2
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: app2
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app3
+  labels:
+    app: app3
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: app3
+  type: NodePort
+---
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1
+  labels:
+    app: app1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+      - name: app1
+        image: paulbouwer/hello-kubernetes:1.10
+        imagePullPolicy: IfNotPresent
+        env: 
+        - name: MESSAGE
+          value: "App 1"
+--- 
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2
+  labels:
+    app: app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+      - name: app2
+        image: paulbouwer/hello-kubernetes:1.10
+        imagePullPolicy: IfNotPresent
+        env: 
+        - name: MESSAGE
+          value: "App 2"
+---
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app3
+  labels:
+    app: app3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app3
+  template:
+    metadata:
+      labels:
+        app: app3
+    spec:
+      containers:
+      - name: app3
+        image: paulbouwer/hello-kubernetes:1.10
+        imagePullPolicy: IfNotPresent
+        env: 
+        - name: MESSAGE
+          value: "App 3"
+---
