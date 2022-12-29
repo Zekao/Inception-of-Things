@@ -57,3 +57,15 @@ Installing K3S on server and server worker
     You should see your server worker in the list.
 
 ### Part 2
+
+Creating apps with K3S
+
+- In this part, we will only keep the server, we will create some apps and deploy them on our server.
+
+    To deploy an app, we will use the following command:
+    
+    ```bash
+    kubectl apply -f <file_name>
+    ```
+   The applications are yaml files, you can find some examples [here](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/).
+   I used the hello-kubernetes application
