@@ -1,0 +1,29 @@
+SERVER_IP = "192.168.56.110"
+
+SERVER_HOSTNAME = "emaugaleS"
+
+IMAGE = "ubuntu/jammy64"
+
+MEMORY = "4096"
+
+CPUS = 4
+
+Vagrant.configure("2") do |config|
+
+        config.vm.box = IMAGE
+        config.vm.provider "virtualbox" do |vb|
+            vb.memory = MEMORY
+            vb.cpus = CPUS
+        end
+
+        config.vm.define "server" do |server|
+            server.vm.hostname = SERVER_HOSTNAME
+            server.vm.synced_folder ".", "/vagrant"
+            server.vm.network "private_network", ip: SERVER_IP
+            server.vm.provision "shell", privileged: true, path: "scripts/k3s_master.sh", args: [SERVER_IP]
+            server.vm.provision "shell", privileged: true, path: "scripts/k3d_install.sh", args: [SERVER_IP]
+            server.vm.provision "shell", privileged: true, path: "scripts/argocd_install.sh", args: [SERVER_IP]
+            server.vm.provision "shell", privileged: true, path: "scripts/helm_install.sh"
+            server.vm.provision "shell", privileged: true, path: "scripts/gitlab_deployement.sh"
+        end
+    end
