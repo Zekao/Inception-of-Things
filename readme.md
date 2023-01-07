@@ -153,8 +153,12 @@ Let's do a second recap with the new tools:
 |Dockers                  | It's a containerization tool.|
 |ArgoCD                  | It's a tool to deploy apps on a kubernetes cluster.|
 
+---
 ### Bonus
 
 ##### Creating a CI/CD pipeline with Gitlab
 
-### WIP
+- The bonus part is to create a CI/CD pipeline with our builded version of Gitlab, it will be used to deploy our app with Gitlab.
+    - First, we will need to install helm, it's a package manager for kubernetes. You can find an explanation [here](https://helm.sh/docs/intro/install/).
+    - After that, we will use helm to install gitlab on our cluster. You can find the yaml file [here](https://docs.gitlab.com/charts/installation/deployment.html) and [here](https://docs.gitlab.com/charts/installation/command-line-options.html).
+
