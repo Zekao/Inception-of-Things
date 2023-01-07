@@ -4,7 +4,7 @@ SERVER_HOSTNAME = "emaugaleS"
 
 IMAGE = "ubuntu/jammy64"
 
-MEMORY = "4096"
+MEMORY = "8192"
 
 CPUS = 4
 

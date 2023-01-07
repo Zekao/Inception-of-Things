@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export EMAIL="emaugale@student.42.fr"
+export DOMAIN="gitlab.emaugale.com"
 export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 
 kubectl create namespace gitlab
@@ -8,20 +10,14 @@ helm repo add gitlab https://charts.gitlab.io/
 
 helm search repo gitlab
 
-helm install gitlab gitlab/gitlab-agent
+helm install gitlab gitlab/gitlab --set global.hosts.domain=$DOMAIN --set certmanager-issuer.email=$EMAIL --set global.hosts.https="false" --set global.ingress.configureCertmanager="false" --set gitlab-runner.install="false" -n gitlab
 
-# Check the differents options: `helm show values gitlab/gitlab-agent`
+echo -n "[INFO]   Gitlab password: "
 
-helm repo add gitlab https://charts.gitlab.io
-helm repo update
+kubectl get secret -n gitlab gitlab-gitlab-initial-root-password -o jsonpath='{.data.password}' | base64 -d; echo
 
-# Install the GitLab Agent Helm chart on namespace gitlab
+echo 'Waiting for gitlab to be deployed'
+kubectl wait -n gitlab --for=condition=available deployment --all --timeout=-1s
 
-helm upgrade --install gitlab-agent gitlab/gitlab-agent \
-    --set config.kasAddress='wss://kas.gitlab.emaugale.com' \
-    --set config.token='supersecrettoken'
-
-kubectl get secret gitlab-agent-token -o jsonpath='{.data.token}' | base64 --d
-
-# configure the GitLab Agent Helm chart on namespace gitlab
-
+kubectl port-forward --address 0.0.0.0 svc/gitlab-webservice-default -n gitlab 8085:8181
+# kubectl get secret gitlab-wildcard-tls-ca -ojsonpath='{.data.cfssl_ca}' | base64 --decode > gitlab.gitlab.emaugale.com.ca.pem
