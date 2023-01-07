@@ -1,0 +1,15 @@
+Vagrant.configure("2") do |config|
+
+    config.vm.box = "ubuntu/jammy64"
+    config.vm.provider "virtualbox" do |vb| 
+      vb.cpus = "3" 
+      vb.memory = "4024" 
+    end
+    
+    config.vm.define "server" do |server|
+        server.vm.hostname = "lusehair"
+        server.vm.network :private_network, ip: "192.168.56.110"
+        server.vm.synced_folder ".", "/vagrant"
+        server.vm.provision "shell", privileged: true, path: "scripts/server.sh"
+    end
+  end
