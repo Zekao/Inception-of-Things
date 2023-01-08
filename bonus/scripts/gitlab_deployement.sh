@@ -20,4 +20,3 @@ echo 'Waiting for gitlab to be deployed'
 kubectl wait -n gitlab --for=condition=available deployment --all --timeout=-1s
 
 kubectl port-forward --address 0.0.0.0 svc/gitlab-webservice-default -n gitlab 8085:8181
-# kubectl get secret gitlab-wildcard-tls-ca -ojsonpath='{.data.cfssl_ca}' | base64 --decode > gitlab.gitlab.emaugale.com.ca.pem
