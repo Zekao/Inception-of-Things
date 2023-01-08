@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "[INFO]   Installing argocd on server node (ip: $1)"
 
 k3d cluster create argocd
