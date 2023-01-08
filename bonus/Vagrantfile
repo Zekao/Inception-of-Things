@@ -4,9 +4,9 @@ SERVER_HOSTNAME = "emaugaleS"
 
 IMAGE = "ubuntu/jammy64"
 
-MEMORY = "8192"
+MEMORY = "12288"
 
-CPUS = 4
+CPUS = 8
 
 Vagrant.configure("2") do |config|
 
