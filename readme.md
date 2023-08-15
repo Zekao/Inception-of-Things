@@ -106,7 +106,7 @@ To use K3D, you will need a docker version >= 20.1.X so we can't use alpine linu
 
 - First we have to install docker, you can find an explanation [here](https://docs.docker.com/engine/install/ubuntu/).
 
-- Now, we have to install K3D, you can find an explanation [here](https://k3d.io/usage/quickstart/).
+- Now, we have to install K3D, you can find an explanation [here](https://k3d.io/).
 
 
 Now, we will create a cluster and two namespaces, one for argocd and the other one for our apps.
